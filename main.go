@@ -12,6 +12,7 @@ import (
 )
 
 const (
+    PADDING                   = " "
 	FONT_FAMILY               = "DejaVu Sans"
 	FONT_SIZE                 = 11
 	COLOR_FOREGROUND          = "#A3A6AB"
@@ -52,6 +53,8 @@ func screen_width() int {
 	return swidth
 }
 */
+
+var dzen_string string
 
 func getWeather(station string) string {
 
@@ -106,12 +109,7 @@ func getWeather(station string) string {
 
 }
 
-    
-
-func main() {
-        //swidth := screen_width()
-        //fmt.Println(swidth)
-
+func getWindows() {
     cmd := exec.Command("bspc", "control", "--subscribe")
     stdout, err := cmd.StdoutPipe()
     if err != nil {
@@ -121,14 +119,51 @@ func main() {
         fmt.Println("error")
     }
     scanner := bufio.NewScanner(stdout)
+    wmstring := ""
     for scanner.Scan() {
-        fmt.Println(scanner.Text())
+        s := scanner.Text()
+        for _, i := range strings.Split(s, ":") {
+            name := string(i[1])
+            fmt.Println(name)
+            var fg string
+            var bg string
+            switch {
+            case strings.HasPrefix(i, "O"):
+                fg = COLOR_FOCUSED_OCCUPIED_FG
+                bg = COLOR_FOCUSED_OCCUPIED_BG
+            case strings.HasPrefix(i, "F"):
+                fg = COLOR_FOCUSED_FREE_FG
+                bg = COLOR_FOCUSED_FREE_BG
+            case strings.HasPrefix(i, "U"):
+                fg = COLOR_FOCUSED_URGENT_FG
+                bg = COLOR_FOCUSED_URGENT_BG
+            case strings.HasPrefix(i, "o"):
+                fg = COLOR_OCCUPIED_FG
+                bg = COLOR_OCCUPIED_BG
+            case strings.HasPrefix(i, "f"):
+                fg = COLOR_FREE_FG
+                bg = COLOR_FREE_BG
+            case strings.HasPrefix(i, "u"):
+                fg = COLOR_URGENT_FG
+                bg = COLOR_URGENT_BG
+            }
+            wmstring = fmt.Sprintf("%s^fg(%s)^bg(%s)^ca(1, bspc desktop -f %s)^ca(2, bspc window -d %s)%s%s%s^ca()^ca()", wmstring, fg, bg, name, name, PADDING, name, PADDING)
+        }
+        fmt.Println(wmstring)
     }
+}
 
+    
+
+func main() {
+        //swidth := screen_width()
+        //fmt.Println(swidth)
         
     for true {
+        go getWindows()
         t := time.Now().Local()
         fmt.Printf("S%s    %s\n", getWeather("KMMU"), t.Format("Jan 2 15:04"))
         time.Sleep(10 * time.Second)
+
     }
 }
