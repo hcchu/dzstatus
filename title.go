@@ -1,9 +1,9 @@
 package main
 
 import (
-    "bufio"
-    "fmt"
-    "os/exec"
+	"bufio"
+	"fmt"
+	"os/exec"
 )
 
 func getTitle(tmessages chan string) {
@@ -17,7 +17,7 @@ func getTitle(tmessages chan string) {
 	}
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
-        s := scanner.Text()
-        tmessages <-s
-    }
+		s := scanner.Text()
+		tmessages <- s
+	}
 }
