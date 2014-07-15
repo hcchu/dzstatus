@@ -11,7 +11,7 @@ import (
 
 const (
 	SPADDING     = " "
-	SCREEN_WIDTH = 1920
+	SCREEN_WIDTH = 1900
 	FONT_FAMILY  = "DejaVu Sans"
 	FONT_SIZE    = "11"
 )
@@ -55,6 +55,8 @@ func main() {
 	var battery string
 	var weather string
     var cpu string
+    var mem string
+    var net string
 
 	wmessages := make(chan string)
 	tmessages := make(chan string)
@@ -62,6 +64,8 @@ func main() {
 	bmessages := make(chan string)
 	weathermsgs := make(chan string)
 	cpuchan := make(chan string)
+	memchan := make(chan string)
+	netchan := make(chan string)
 
 	go showWindows(wmessages)
 	go getTitle(tmessages)
@@ -69,6 +73,8 @@ func main() {
 	go getBattery(bmessages)
 	go getWeather("KMMU", weathermsgs)
     go getCpu(cpuchan)
+    go getMem(memchan)
+    go getNet(netchan)
 
 	for {
 
@@ -96,6 +102,13 @@ func main() {
 
         case cpumsg := <-cpuchan:
             cpu = cpumsg
+
+        case memmsg := <-memchan:
+            mem = memmsg
+
+        case netmsg := <-netchan:
+            net = netmsg
+
 		}
 
 
@@ -107,7 +120,7 @@ func main() {
 
 		sstatus := ""
 
-		right_contents := []string{cpu, weather, battery, clock}
+		right_contents := []string{net, mem, cpu, weather, battery, clock}
 		//right_contents := []string{clock, battery, weather}
 
 		/*
