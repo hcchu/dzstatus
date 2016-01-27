@@ -42,7 +42,7 @@ func getCpu(cpuchan chan string) {
         cpu := (((total-ptotal) - (idle-pidle)) / (total-ptotal)) * 100
 
         result := strconv.FormatFloat(cpu, 'f', 0, 32)
-        cpumsg := fmt.Sprintf("%s%%", result)
+        cpumsg := fmt.Sprintf("%s %s%% ", "^i(/home/hcchu/repos/dzstatus/dzen-icons/cpu.xbm)", result)
         
         cpuchan <-cpumsg
         time.Sleep(2 * time.Second)
