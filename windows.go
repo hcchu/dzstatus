@@ -33,7 +33,7 @@ const (
 )
 
 func showWindows(messages chan string) {
-	cmd := exec.Command("bspc", "control", "--subscribe")
+	cmd := exec.Command("bspc", "subscribe")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Println("error")
